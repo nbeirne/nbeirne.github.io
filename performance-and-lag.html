@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="eSight Eyewear">
+    <meta name="author" content="Nick Beirne">
+
+        <title>Performance and Lag · eSight Eyewear</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://bootswatch.com/journal/bootstrap.min.css" type="text/css">
+
+    <link rel="stylesheet" href="/theme/css/main.css">
+
+    <link rel="stylesheet" href="/theme/css/solarized-light.css">
+
+
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+  <div class="container" id="wrap">
+      <nav id="navbar" class="navbar navbar-default" role="navigation">
+    <div class="container">
+
+      <!--navbar-header-->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="">eSight Eyewear</a>
+      </div> <!--navbar-header-->
+
+      <!-- Search Box -->
+
+      <!--Menuitems, collapable-->
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right" id="menuitem-list">
+                <li >
+                  <a href="/about-esight" >About</a>
+                </li>
+
+                <li >
+                  <a href="/objectives" >Learning Objectives</a>
+                </li>
+
+              <li class="btn-group">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Projects<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li >
+                    <a href="/projects" >Projects</a>
+                  </li>
+                  <li >
+                    <a href="/pairing" >Pairing</a>
+                  </li>
+                  <li >
+                    <a href="/performance-and-lag" >Performance and Lag</a>
+                  </li>
+                  <li >
+                    <a href="/supporting-bluetooth-and-wifi" >Supporting Bluetooth</a>
+                  </li>
+                </ul>
+              </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+
+    </div> <!--container-->
+  </nav>
+
+
+    <div class="container">
+      <div class="col-md-2">
+      </div>
+
+      <div class="col-md-8">
+        <div class="row">
+              <div class="page-header">
+        <h1><a href="/performance-and-lag.html">Performance and Lag</a></h1>
+    </div>
+
+        </div>
+
+        <div class="row">
+
+  <div id="article_content">
+    <p>From the start of my term there was always issues with lag while streaming. During demonstrations of the eSight device the app was  often unusable because of interference. Issues like that are very difficult to fix because they are an outcome of the physical state of a place rather than a software bug. </p>
+<p>The flow of data through the encoder is as follows:
+Android Surface -&gt; Encoder -&gt; Socket/Bluetooth Output</p>
+<p>Drawing a picture to the surface gives the encoder data, which we can then write to a network connection. This model works, but I discovered that if the encoder is not read from fast enough it will eventually stop the main thread. That's not a huge problem until you realize that writing to a socket is <em>blocking</em>. You must also write all data you receive from the encoder out, otherwise the stream gets corrupted. Therefore, there must be some other module between the encoder and output that can stop data from being rendered to the surface. </p>
+<p>Proposed change:
+Android Surface -&gt; Encoder -&gt; ThreadedBufferWriter -&gt; Socket/Bluetooth Output
+            ------------ isReady ---/</p>
+<p>In the above diagram ThreadedBufferWriter all the data from the encoder, and buffers it for the output. The socket output module reads data from that buffer and writes it as fast as it can, but when it slows its OK. ThreadedBufferWriter does not drop any data itself, but it can make isReady return false - which will stop data being rendered. Any lag optimization code can now be contained within the Encoder (setting bitrate, resolution, etc) and ThreadedBufferWriter (buffering, what happens when there is lag, etc). </p>
+<p>From here on out all that needed to happen was optimizing parameters. Through experimentation I found that bluetooth could handle a bitrate of 500kb/s, slightly lower than what we had set before. I originally made the ThreadedBufferWriter buffer about 30 frames of data, then it would stop rendering until it hit 15 frames. That worked, but it would cause weird jumping sometimes when the encoder started to generate lots of data. After some trial-and-error I found that changing the behaviour to stop rendering until the buffer was completely empty worked far better. After all my work the lag appeared to be largely solved, but it's very difficult to test that kind of behaviour. </p>
+  </div>
+
+  <hr/>
+
+        </div>
+
+        <div class="row">
+        </div>
+
+      </div>
+
+      <div class="col-md-2">
+      </div>
+    </div>
+
+
+  </div>
+
+    <nav id="footer" class="navbar navbar-default">
+    <div class="container">
+        <p id="footer-text" class="navbar-text text-center">
+          <span id="engine">
+            Compiled using
+            <a href="https://docs.getpelican.com">Pelican</a>
+          </span>
+          <span id="theme">
+            with theme
+            <a href="https://github.com/yuex/pelican-chameleon">Chameleon</a>
+          </span>
+          <span id="bootstrap">
+            on top of
+            <a href="https://getbootstrap.com/">Bootstrap</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="eSight Eyewear">
+    <meta name="author" content="Nick Beirne">
+
+        <title>Pairing · eSight Eyewear</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://bootswatch.com/journal/bootstrap.min.css" type="text/css">
+
+    <link rel="stylesheet" href="/theme/css/main.css">
+
+    <link rel="stylesheet" href="/theme/css/solarized-light.css">
+
+
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+  <div class="container" id="wrap">
+      <nav id="navbar" class="navbar navbar-default" role="navigation">
+    <div class="container">
+
+      <!--navbar-header-->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="">eSight Eyewear</a>
+      </div> <!--navbar-header-->
+
+      <!-- Search Box -->
+
+      <!--Menuitems, collapable-->
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right" id="menuitem-list">
+                <li >
+                  <a href="/about-esight" >About</a>
+                </li>
+
+                <li >
+                  <a href="/objectives" >Learning Objectives</a>
+                </li>
+
+              <li class="btn-group">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Projects<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li >
+                    <a href="/projects" >Projects</a>
+                  </li>
+                  <li >
+                    <a href="/pairing" >Pairing</a>
+                  </li>
+                  <li >
+                    <a href="/performance-and-lag" >Performance and Lag</a>
+                  </li>
+                  <li >
+                    <a href="/supporting-bluetooth-and-wifi" >Supporting Bluetooth</a>
+                  </li>
+                </ul>
+              </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+
+    </div> <!--container-->
+  </nav>
+
+
+    <div class="container">
+      <div class="col-md-2">
+      </div>
+
+      <div class="col-md-8">
+        <div class="row">
+              <div class="page-header">
+        <h1><a href="/pairing.html">Pairing</a></h1>
+    </div>
+
+        </div>
+
+        <div class="row">
+
+  <div id="article_content">
+    <p>The eSight device allows remote access for a variety of purposes. The eStreamer app can stream video from the eSight unit, and it can stream the phone's screen to the eSight. It also allows remote control from the app, so a user can use their phone to manipulate menu systems rather than the hardware controller. Given that eStreamer can give away personal information about the user it is imperative that it has security measures put in place.</p>
+<p>Initially the connection that allowed control of the eSight device was completely unauthenticated. It would allow anyone to connect and take over the device without warning. My goal was to make these connections secure. </p>
+<h4>The Diffie Hellman Key Exchange</h4>
+<p>Whitfield Diffie and Martin Hellman came up with the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie Hellman Key Exchange</a> to allow two parties to have secure communication. We used it to generate an "authentication" key that would be used to authenticate any further connections.</p>
+<p>A simplified process for Diffie Hellman:</p>
+<ol>
+<li>The eSight Device and eStreamer have a shared General Key.</li>
+<li>The eSight Device generates a private key, which is combines with the General Key to make a public key.</li>
+<li>eStreamer generates a public/private key pair using the same method as above.</li>
+<li>The eSight device sends their public key to eStreamer.</li>
+<li>eStreamer sends their public key to the eSight device.</li>
+<li>A private shared key is generated from adding the private keys to the public key of the other party.</li>
+</ol>
+<p>The private shared key is the General Key, combined with the private keys of both the eSight device and eStreamer. It is impossible to derive the shared private key in an efficient way without those three pieces of information. Once a shared key is generated, both parties store it. Whenever a connection is initiated the eSight device sends a "challenge" to the tablet - and the tablet must encrypt the challenge and send it back. If the eSight device determines the encryption is bad, it rejects the connection.</p>
+<p>Additionally, before the key is stored, the eSight devices asks the user to "allow", "remember", or "deny" the connection. When allowed, the connection proceeds but the key is not put into storage and this popup appears on subsequent connections. If remembered, the key is put into storage for future use. They key exchange allows us to remember the device in a secure way, while the prompt gives an extra level of safety for unknown connections.</p>
+  </div>
+
+  <hr/>
+
+        </div>
+
+        <div class="row">
+        </div>
+
+      </div>
+
+      <div class="col-md-2">
+      </div>
+    </div>
+
+
+  </div>
+
+    <nav id="footer" class="navbar navbar-default">
+    <div class="container">
+        <p id="footer-text" class="navbar-text text-center">
+          <span id="engine">
+            Compiled using
+            <a href="https://docs.getpelican.com">Pelican</a>
+          </span>
+          <span id="theme">
+            with theme
+            <a href="https://github.com/yuex/pelican-chameleon">Chameleon</a>
+          </span>
+          <span id="bootstrap">
+            on top of
+            <a href="https://getbootstrap.com/">Bootstrap</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+
+</body>
+</html>

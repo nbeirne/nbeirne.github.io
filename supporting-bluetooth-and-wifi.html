@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="eSight Eyewear">
+    <meta name="author" content="Nick Beirne">
+
+        <title>Supporting Bluetooth and Wifi · eSight Eyewear</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://bootswatch.com/journal/bootstrap.min.css" type="text/css">
+
+    <link rel="stylesheet" href="/theme/css/main.css">
+
+    <link rel="stylesheet" href="/theme/css/solarized-light.css">
+
+
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+  <div class="container" id="wrap">
+      <nav id="navbar" class="navbar navbar-default" role="navigation">
+    <div class="container">
+
+      <!--navbar-header-->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="">eSight Eyewear</a>
+      </div> <!--navbar-header-->
+
+      <!-- Search Box -->
+
+      <!--Menuitems, collapable-->
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right" id="menuitem-list">
+                <li >
+                  <a href="/about-esight" >About</a>
+                </li>
+
+                <li >
+                  <a href="/objectives" >Learning Objectives</a>
+                </li>
+
+              <li class="btn-group">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Projects<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li >
+                    <a href="/projects" >Projects</a>
+                  </li>
+                  <li >
+                    <a href="/pairing" >Pairing</a>
+                  </li>
+                  <li >
+                    <a href="/performance-and-lag" >Performance and Lag</a>
+                  </li>
+                  <li >
+                    <a href="/supporting-bluetooth-and-wifi" >Supporting Bluetooth</a>
+                  </li>
+                </ul>
+              </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+
+    </div> <!--container-->
+  </nav>
+
+
+    <div class="container">
+      <div class="col-md-2">
+      </div>
+
+      <div class="col-md-8">
+        <div class="row">
+              <div class="page-header">
+        <h1><a href="/supporting-bluetooth-and-wifi.html">Supporting Bluetooth and Wifi</a></h1>
+    </div>
+
+        </div>
+
+        <div class="row">
+
+  <div id="article_content">
+    <p>The eSight Eyewear has hardware support for both Wifi and Bluetooth networks - but the software only supported wifi! eStreamer itself worked by the HMD acting as a router, and the app would connect to that network in order to stream. While that process made it easier to establish the connection[1] it had several downsides. First: while connected it was impossible to use the internet on the phone/tablet. Second: Wifi in general is prone to interference and slow-downs [2]. </p>
+<p>Supporting Wifi and Bluetooth in software seems like an easy task; but it ended up requiring a major refactor. I wanted to be able to compose small pieces of code together to create a larger stream. Since we had no access to <a href="https://dzone.com/articles/functional-programming-java-8">Java 8 Functional Programming</a> I created my own similar library. It supported the concept of a "producer", "consumer", and "Function" that could map values. </p>
+<p>A wifi and bluetooth connection followed both the "producer" and "consumer" interface for writing and reading values respectively. Therefore, in the stream code everything else could be exactly the same. The buffering, encoding, and stream management is generic enough to handle any kind of producer/consumer - it could be Bluetooth, Wifi, or even it could be outputting to a file if necessary. </p>
+<p>The interfaces went through several refactors and redesigns. The eventual result ended up removing about 200 lines of code while at the same time adding support for Bluetooth. The pairing protocol, message handling, and even streaming code is shared no matter what type the connection has. The only difference between wifi and bluetooth is about 100 lines of Java which deal with socket/Bluetooth specific output and input.</p>
+<p>[1] Connecting to a network from the HMD was tedious. Entering passwords was difficult, and scanning for an HMD currently on a network was technically possible however it was inconsistent and error-prone.</p>
+<p>[2] see Performance and Lag Issues</p>
+  </div>
+
+  <hr/>
+
+        </div>
+
+        <div class="row">
+        </div>
+
+      </div>
+
+      <div class="col-md-2">
+      </div>
+    </div>
+
+
+  </div>
+
+    <nav id="footer" class="navbar navbar-default">
+    <div class="container">
+        <p id="footer-text" class="navbar-text text-center">
+          <span id="engine">
+            Compiled using
+            <a href="https://docs.getpelican.com">Pelican</a>
+          </span>
+          <span id="theme">
+            with theme
+            <a href="https://github.com/yuex/pelican-chameleon">Chameleon</a>
+          </span>
+          <span id="bootstrap">
+            on top of
+            <a href="https://getbootstrap.com/">Bootstrap</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+
+</body>
+</html>
